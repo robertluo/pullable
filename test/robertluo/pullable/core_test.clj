@@ -39,3 +39,16 @@
     (testing "set"
       (is (= [{:a 5 :b 4} {:a 3 :b 6}]
              (sut/-transform q #{} #{{:a 5 :b 4} {:a 3 :b 6}}))))))
+
+(deftest simple-query
+  (is (= 7
+         (sut/-value-of (sut/simple-query :a) {:a 7})))
+  (is (= [5 7]
+         (sut/-value-of (sut/simple-query :a) [{:a 5} {:a 7}])))
+  (is (= [[5 7]]
+         (sut/-value-of (sut/simple-query :a) [{:a [5 7]}]))))
+
+(deftest vector-query
+  (let [q (sut/vector-query [(sut/simple-query :a)
+                             (sut/simple-query :b)])]
+    (is (= [[:a 7] [:b ::sut/none]] (sut/-value-of q {:a 7})))))
